@@ -1,13 +1,11 @@
 {
   "kind": "3d",
   "outputName": "hero-object",
-  "model": "image-to-3d",
-  "prompt": "Abstract glassy hero object for a premium animated marketing website, clean silhouette, smooth topology, studio-lit, editorial quality.",
-  "negativePrompt": "character, text, environment, hard edges, kitbash clutter",
-  "seed": 42,
-  "estimateUsd": 3.2,
-  "params": {
-    "format": "glb"
+  "model": "tripo3d-p1-text-to-3d",
+  "estimateUsd": 0.7,
+  "input": {
+    "prompt": "Abstract glassy hero object for a premium animated marketing website, clean silhouette, smooth topology, studio-lit, editorial quality. No character, no text, no environment, no hard edges, no kitbash clutter.",
+    "texture": true,
+    "face_limit": 12000
   }
 }
-

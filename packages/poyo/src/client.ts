@@ -8,22 +8,41 @@ export type AssetPrompt = {
   kind: "image" | "video" | "3d";
   outputName: string;
   model: string;
-  prompt: string;
-  negativePrompt?: string;
-  seed?: number;
   estimateUsd: number;
-  endpoint?: string;
-  params?: Record<string, unknown>;
+  /** Passed verbatim as the PoYo `input` object — shape depends on `model`, see docs/poyo-api.md */
+  input: Record<string, unknown>;
 };
 
-type PoyoTaskResponse = {
-  id: string;
-  status?: string;
-  result?: {
-    url?: string;
-    urls?: string[];
-    files?: { url: string }[];
-  };
+type PoyoEnvelope<T> = {
+  code: number;
+  data?: T;
+  error?: { message: string; type: string };
+};
+
+type PoyoSubmitData = {
+  task_id: string;
+  status: string;
+  created_time: string;
+};
+
+type PoyoStatusFile = {
+  file_url: string;
+  file_type: string;
+  label?: string | null;
+  format?: string | null;
+  content_type?: string | null;
+  file_name?: string | null;
+  file_size?: number | null;
+};
+
+type PoyoStatusData = {
+  task_id: string;
+  status: string;
+  credits_amount?: number;
+  files: PoyoStatusFile[];
+  created_time: string;
+  progress: number;
+  error_message?: string | null;
 };
 
 type AssetManifestEntry = {
@@ -31,8 +50,8 @@ type AssetManifestEntry = {
   outputName: string;
   prompt: string;
   model: string;
-  seed?: number;
   estimateUsd: number;
+  creditsCharged?: number;
   createdAt: string;
   source: string;
   outputs: string[];
@@ -41,7 +60,6 @@ type AssetManifestEntry = {
 const repoRoot = fileURLToPath(new URL("../../..", import.meta.url));
 const assetsDir = path.join(repoRoot, "apps/site/public/assets");
 const manifestPath = path.join(assetsDir, "asset-manifest.json");
-const authHeaderName = "Authorization";
 
 function resolvePromptPath(promptPath: string) {
   return path.isAbsolute(promptPath) ? promptPath : path.join(repoRoot, promptPath);
@@ -81,57 +99,64 @@ function poyoHeaders(extraHeaders?: Record<string, string>) {
   const apiKey = process.env.POYO_API_KEY ?? "";
 
   return {
-    [authHeaderName]: ["Bearer", apiKey].join(" "),
+    Authorization: `Bearer ${apiKey}`,
     ...extraHeaders
   };
 }
 
 async function submitTask(prompt: AssetPrompt) {
   const baseUrl = getBaseUrl();
-  const endpoint = prompt.endpoint ?? `/v1/generate/${prompt.kind}`;
-  const response = await fetch(`${baseUrl}${endpoint}`, {
+  const response = await fetch(`${baseUrl}/api/generate/submit`, {
     method: "POST",
     headers: poyoHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({
       model: prompt.model,
-      prompt: prompt.prompt,
-      negativePrompt: prompt.negativePrompt,
-      seed: prompt.seed,
-      ...prompt.params
+      input: prompt.input
     })
   });
 
-  if (!response.ok) {
-    throw new Error(`Failed to submit PoYo task: ${response.status} ${response.statusText}`);
+  const payload = (await response.json()) as PoyoEnvelope<PoyoSubmitData>;
+
+  if (!response.ok || payload.code !== 200 || !payload.data?.task_id) {
+    const message = payload.error?.message ?? `${response.status} ${response.statusText}`;
+    throw new Error(`Failed to submit PoYo task: ${message}`);
   }
 
-  return (await response.json()) as PoyoTaskResponse;
+  return payload.data.task_id;
 }
 
 async function pollTask(taskId: string) {
   const baseUrl = getBaseUrl();
-  const pollInterval = Number(process.env.POYO_POLL_INTERVAL_MS ?? "2500");
-  const timeoutMs = Number(process.env.POYO_TIMEOUT_MS ?? "180000");
+  const pollInterval = Number(process.env.POYO_POLL_INTERVAL_MS ?? "3000");
+  const timeoutMs = Number(process.env.POYO_TIMEOUT_MS ?? "600000");
   const deadline = Date.now() + timeoutMs;
 
   while (Date.now() < deadline) {
-    const response = await fetch(`${baseUrl}/v1/tasks/${taskId}`, {
+    const response = await fetch(`${baseUrl}/api/generate/status/${taskId}`, {
       headers: poyoHeaders()
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to poll PoYo task ${taskId}: ${response.status}`);
+    if (response.status === 429) {
+      await new Promise((resolve) => setTimeout(resolve, pollInterval));
+      continue;
     }
 
-    const payload = (await response.json()) as PoyoTaskResponse;
-    const status = payload.status?.toLowerCase();
+    const payload = (await response.json()) as PoyoEnvelope<PoyoStatusData>;
 
-    if (status === "completed" || status === "succeeded" || status === "success") {
-      return payload;
+    if (!response.ok || payload.code !== 200 || !payload.data) {
+      const message = payload.error?.message ?? `${response.status} ${response.statusText}`;
+      throw new Error(`Failed to poll PoYo task ${taskId}: ${message}`);
     }
 
-    if (status === "failed" || status === "error" || status === "canceled") {
-      throw new Error(`PoYo task ${taskId} ended with status "${payload.status}".`);
+    const { status, progress } = payload.data;
+    console.log(`  status=${status} progress=${progress ?? 0}%`);
+
+    if (status === "finished") {
+      return payload.data;
+    }
+
+    if (status === "failed") {
+      throw new Error(`PoYo task ${taskId} failed: ${payload.data.error_message ?? "unknown error"}`);
     }
 
     await new Promise((resolve) => setTimeout(resolve, pollInterval));
@@ -140,27 +165,27 @@ async function pollTask(taskId: string) {
   throw new Error(`Timed out waiting for PoYo task ${taskId}.`);
 }
 
-function extractDownloadUrl(payload: PoyoTaskResponse) {
-  return (
-    payload.result?.url ??
-    payload.result?.urls?.[0] ??
-    payload.result?.files?.[0]?.url
-  );
+function pickFile(files: PoyoStatusFile[], kind: AssetPrompt["kind"]) {
+  if (kind === "3d") {
+    return files.find((file) => file.label === "model_glb") ?? files.find((file) => file.file_type === "3d");
+  }
+
+  return files.find((file) => file.file_type === kind);
 }
 
-async function downloadToTmp(url: string, outputName: string) {
-  const response = await fetch(url);
+async function downloadToTmp(file: PoyoStatusFile, outputName: string) {
+  const response = await fetch(file.file_url);
 
   if (!response.ok) {
     throw new Error(`Failed to download generated asset: ${response.status} ${response.statusText}`);
   }
 
-  const tempDir = await mkdir(path.join(os.tmpdir(), "motionsites-poyo"), { recursive: true }).then(
-    () => path.join(os.tmpdir(), "motionsites-poyo")
-  );
+  const tempDir = path.join(os.tmpdir(), "motionsites-poyo");
+  await mkdir(tempDir, { recursive: true });
 
-  const urlPath = new URL(url).pathname;
-  const extension = path.extname(urlPath) || ".bin";
+  const extension = file.format
+    ? `.${file.format}`
+    : path.extname(new URL(file.file_url).pathname) || ".bin";
   const filePath = path.join(tempDir, `${outputName}${extension}`);
   const arrayBuffer = await response.arrayBuffer();
 
@@ -168,15 +193,20 @@ async function downloadToTmp(url: string, outputName: string) {
   return filePath;
 }
 
-async function registerManifest(prompt: AssetPrompt, source: string, outputs: OptimizedAsset[]) {
+async function registerManifest(
+  prompt: AssetPrompt,
+  source: string,
+  outputs: OptimizedAsset[],
+  completed: PoyoStatusData
+) {
   const existing = JSON.parse(await readFile(manifestPath, "utf8")) as AssetManifestEntry[];
   const nextEntry: AssetManifestEntry = {
     kind: prompt.kind,
     outputName: prompt.outputName,
-    prompt: prompt.prompt,
+    prompt: typeof prompt.input.prompt === "string" ? prompt.input.prompt : "",
     model: prompt.model,
-    seed: prompt.seed,
     estimateUsd: prompt.estimateUsd,
+    creditsCharged: completed.credits_amount,
     createdAt: new Date().toISOString(),
     source: path.relative(repoRoot, source),
     outputs: outputs.map((item) => path.relative(path.join(repoRoot, "apps/site/public"), item.path))
@@ -207,19 +237,21 @@ export async function runGeneration(promptPath: string, expectedKind: AssetPromp
 
   console.log(`Estimated cost: $${prompt.estimateUsd.toFixed(2)}`);
 
-  const submitted = await submitTask(prompt);
-  const completed = await pollTask(submitted.id);
-  const downloadUrl = extractDownloadUrl(completed);
+  const taskId = await submitTask(prompt);
+  console.log(`Submitted task ${taskId} (model=${prompt.model})`);
 
-  if (!downloadUrl) {
-    throw new Error("PoYo task completed without a downloadable asset URL.");
+  const completed = await pollTask(taskId);
+  const file = pickFile(completed.files, prompt.kind);
+
+  if (!file) {
+    throw new Error(`PoYo task ${taskId} completed without a "${prompt.kind}" file in the response.`);
   }
 
-  const tempFile = await downloadToTmp(downloadUrl, prompt.outputName);
+  const tempFile = await downloadToTmp(file, prompt.outputName);
   const optimized = await optimizeAsset(prompt, tempFile, assetsDir);
   const sourceFile = await copySourceIntoAssets(tempFile, prompt);
 
-  await registerManifest(prompt, sourceFile, optimized);
+  await registerManifest(prompt, sourceFile, optimized, completed);
 
   const size = await stat(sourceFile);
   console.log(
@@ -228,6 +260,7 @@ export async function runGeneration(promptPath: string, expectedKind: AssetPromp
         outputName: prompt.outputName,
         source: path.relative(repoRoot, sourceFile),
         bytes: size.size,
+        creditsCharged: completed.credits_amount,
         outputs: optimized.map((item) => path.relative(repoRoot, item.path))
       },
       null,
