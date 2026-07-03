@@ -1,0 +1,16 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#050816"/>
+  <circle cx="260" cy="150" r="160" fill="#7EE7FF" fill-opacity="0.22"/>
+  <circle cx="970" cy="120" r="140" fill="#FF8A7A" fill-opacity="0.18"/>
+  <rect x="122" y="98" width="956" height="432" rx="54" fill="#0F1530" stroke="#D7E1FF" stroke-opacity="0.16"/>
+  <text x="178" y="258" fill="#E9EFFF" font-family="Arial, sans-serif" font-size="78" font-weight="700">
+    Premium 3D Animated
+  </text>
+  <text x="178" y="344" fill="#E9EFFF" font-family="Arial, sans-serif" font-size="78" font-weight="700">
+    Websites
+  </text>
+  <text x="178" y="414" fill="#9FB0FF" font-family="Arial, sans-serif" font-size="26">
+    Reusable motion systems with Next.js, R3F, GSAP, Lenis, and PoYo.ai.
+  </text>
+</svg>
+

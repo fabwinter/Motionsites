@@ -1,0 +1,13 @@
+{
+  "kind": "3d",
+  "outputName": "hero-object",
+  "model": "image-to-3d",
+  "prompt": "Abstract glassy hero object for a premium animated marketing website, clean silhouette, smooth topology, studio-lit, editorial quality.",
+  "negativePrompt": "character, text, environment, hard edges, kitbash clutter",
+  "seed": 42,
+  "estimateUsd": 3.2,
+  "params": {
+    "format": "glb"
+  }
+}
+

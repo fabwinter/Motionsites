@@ -1,0 +1,15 @@
+{
+  "kind": "video",
+  "outputName": "hero-loop",
+  "model": "seedance",
+  "prompt": "Premium abstract glass object floating in a dark studio, static camera, ambient motion only, cyan and coral caustics, elegant high-end website hero loop.",
+  "negativePrompt": "fast cuts, handheld camera, text overlays, people, logo, chaotic motion",
+  "seed": 101,
+  "estimateUsd": 4.5,
+  "params": {
+    "durationSeconds": 6,
+    "aspectRatio": "16:9",
+    "resolution": "1920x1080"
+  }
+}
+

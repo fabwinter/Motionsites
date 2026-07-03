@@ -1,0 +1,14 @@
+{
+  "kind": "image",
+  "outputName": "hero-still",
+  "model": "nano-banana",
+  "prompt": "Ultra crisp render of a glassy abstract object in a dark studio with cyan and coral lighting, premium editorial art direction.",
+  "negativePrompt": "text, watermark, people, cluttered background",
+  "seed": 77,
+  "estimateUsd": 1.2,
+  "params": {
+    "width": 1600,
+    "height": 900
+  }
+}
+

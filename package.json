@@ -1,0 +1,18 @@
+{
+  "name": "motion-sites",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@11.5.2",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @motionsites/site dev",
+    "build": "pnpm --filter @motionsites/site build",
+    "lint": "pnpm --filter @motionsites/site lint",
+    "typecheck": "pnpm --filter @motionsites/site typecheck && pnpm --filter @motionsites/poyo typecheck",
+    "generate:image": "pnpm --filter @motionsites/poyo generate:image",
+    "generate:video": "pnpm --filter @motionsites/poyo generate:video",
+    "generate:3d": "pnpm --filter @motionsites/poyo generate:3d"
+  }
+}
