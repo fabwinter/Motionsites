@@ -10,4 +10,3 @@ The current implementation assumes:
 - Prompt files in `docs/asset-prompts` provide the request payload and cost estimate.
 
 Update `packages/poyo/src/client.ts` if the live API shape differs.
-

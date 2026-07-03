@@ -128,4 +128,3 @@ export const siteConfig: MotionSiteConfig = {
 };
 
 export default siteConfig;
-

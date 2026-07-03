@@ -127,7 +127,6 @@ export async function optimizeAsset(
     await cp(inputPath, copied);
     return [{ kind: "3d" as const, path: copied }];
   }
-
   return optimizeModel(inputPath, outputDir, prompt.outputName);
 }
-
+}
