@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import siteConfig from "@site-config";
+import { NavBar } from "@/components/sections/NavBar";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider";
 import "./globals.css";
@@ -47,6 +48,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <SmoothScrollProvider>
+          <NavBar />
           <PageTransition>{children}</PageTransition>
         </SmoothScrollProvider>
       </body>
