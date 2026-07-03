@@ -17,6 +17,7 @@ export function ProcessSection() {
     }
 
     const CARD_SCROLL_DISTANCE = 320;
+    const STAGGER_OFFSET = 0.38; // seconds between each card reveal in the scrubbed timeline
     const { gsap, ScrollTrigger } = ensureGsap();
     const cards = cardsRef.current.filter((c): c is HTMLElement => c !== null);
 
@@ -34,7 +35,7 @@ export function ProcessSection() {
     });
 
     cards.forEach((card, i) => {
-      tl.to(card, { opacity: 1, x: 0, ease: "power2.out", duration: 0.4 }, i * 0.38);
+      tl.to(card, { opacity: 1, x: 0, ease: "power2.out", duration: 0.4 }, i * STAGGER_OFFSET);
     });
 
     return () => {
@@ -52,10 +53,10 @@ export function ProcessSection() {
       >
         <div className="section py-24">
           <Reveal as="div" className="eyebrow">
-            Scroll sequence
+            {siteConfig.sections.process.eyebrow}
           </Reveal>
           <Reveal as="h2" className="display-title mt-4 max-w-3xl text-5xl md:text-7xl">
-            Keep the whole page quiet except for one orchestrated moment.
+            {siteConfig.sections.process.heading}
           </Reveal>
           <div className="mt-16 grid gap-6 lg:grid-cols-3">
             {siteConfig.process.map((item, index) => (

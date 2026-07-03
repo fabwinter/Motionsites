@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, Float } from "@react-three/drei";
+import { Float } from "@react-three/drei";
 import type { Mesh } from "three";
 
 function FloatingForm() {
@@ -28,7 +28,7 @@ function FloatingForm() {
           transmission={0.96}
           thickness={1.2}
           ior={1.24}
-          envMapIntensity={1.7}
+          envMapIntensity={0}
           clearcoat={1}
           clearcoatRoughness={0.05}
         />
@@ -40,12 +40,13 @@ function FloatingForm() {
 export default function HeroScene() {
   return (
     <div className="h-full w-full">
-      <Canvas dpr={[1, 1.75]} camera={{ position: [0, 0, 4], fov: 36 }}>
+      {/* DPR capped at 1.5 — keeps iPad Safari comfortably under memory limits */}
+      <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 4], fov: 36 }}>
         <color attach="background" args={["#050816"]} />
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[3, 4, 4]} intensity={5.5} color="#7ee7ff" />
-        <directionalLight position={[-3, -2, 2]} intensity={3.5} color="#ff8a7a" />
-        <Environment preset="studio" />
+        <ambientLight intensity={1.1} />
+        <directionalLight position={[3, 4, 4]} intensity={6} color="#7ee7ff" />
+        <directionalLight position={[-3, -2, 2]} intensity={4} color="#ff8a7a" />
+        <pointLight position={[0, 2, 2]} intensity={2} color="#d7e1ff" />
         <FloatingForm />
       </Canvas>
     </div>

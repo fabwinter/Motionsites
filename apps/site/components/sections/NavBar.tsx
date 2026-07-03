@@ -16,6 +16,7 @@ export function NavBar() {
       return;
     }
 
+    // Must stay in sync with `scroll-padding-top` in globals.css (currently 80px).
     const SCROLL_THRESHOLD = 80;
     const element = ref.current;
     const { gsap } = ensureGsap();

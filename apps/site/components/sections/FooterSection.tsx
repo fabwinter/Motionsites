@@ -10,7 +10,7 @@ export function FooterSection() {
         <div className="mt-1 max-w-md">{siteConfig.site.description}</div>
       </div>
       <div className="font-mono uppercase tracking-[0.24em]">
-        Built for Vercel · Reduced-motion safe · iPad-aware
+        {siteConfig.sections.footer.tagline}
       </div>
     </footer>
   );

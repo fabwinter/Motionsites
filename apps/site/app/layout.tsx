@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import siteConfig from "@site-config";
 import { NavBar } from "@/components/sections/NavBar";
 import { PageTransition } from "@/components/motion/PageTransition";
@@ -51,6 +52,7 @@ export default function RootLayout({
           <NavBar />
           <PageTransition>{children}</PageTransition>
         </SmoothScrollProvider>
+        <Analytics />
       </body>
     </html>
   );
