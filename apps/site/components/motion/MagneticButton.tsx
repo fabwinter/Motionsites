@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { MouseEvent, PropsWithChildren, useRef } from "react";
+import { useRef } from "react";
+import type { MouseEvent, PropsWithChildren } from "react";
 
 type MagneticButtonProps = PropsWithChildren<{
   href: string;

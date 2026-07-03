@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "typescript": "^5",
+    "@types/three": "^0.178.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -1,6 +1,6 @@
 "use client";
 
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { usePathname } from "next/navigation";
 
@@ -21,4 +21,3 @@ export function PageTransition({ children }: PropsWithChildren) {
     </AnimatePresence>
   );
 }
-

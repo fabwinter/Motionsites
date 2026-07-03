@@ -1,6 +1,7 @@
 "use client";
 
-import { PropsWithChildren, useEffect } from "react";
+import { useEffect } from "react";
+import type { PropsWithChildren } from "react";
 import { useReducedMotion } from "framer-motion";
 import Lenis from "lenis";
 import { ensureGsap } from "@/lib/gsap";
@@ -36,4 +37,3 @@ export function SmoothScrollProvider({ children }: PropsWithChildren) {
 
   return children;
 }
-

@@ -1,6 +1,7 @@
 "use client";
 
-import { ElementType, ReactNode, createElement, useEffect, useRef } from "react";
+import { createElement, useEffect, useRef } from "react";
+import type { ElementType, ReactNode } from "react";
 import { useReducedMotion } from "framer-motion";
 import SplitType from "split-type";
 import { ensureGsap } from "@/lib/gsap";

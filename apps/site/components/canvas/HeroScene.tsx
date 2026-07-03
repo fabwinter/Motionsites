@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Float } from "@react-three/drei";
-import { Mesh } from "three";
+import type { Mesh } from "three";
 
 function FloatingForm() {
   const ref = useRef<Mesh | null>(null);

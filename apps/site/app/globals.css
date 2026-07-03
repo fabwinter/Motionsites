@@ -8,6 +8,9 @@
   --cyan: #7ee7ff;
   --coral: #ff8a7a;
   --grid-line: rgba(159, 176, 255, 0.12);
+  --font-inter: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-space-grotesk: "Space Grotesk", "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-jetbrains-mono: "JetBrains Mono", "SFMono-Regular", "SF Mono", Consolas, monospace;
 }
 
 @theme inline {

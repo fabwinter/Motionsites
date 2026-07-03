@@ -1,6 +1,7 @@
 "use client";
 
-import { PropsWithChildren, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import type { PropsWithChildren } from "react";
 import { useReducedMotion } from "framer-motion";
 import { ensureGsap } from "@/lib/gsap";
 
