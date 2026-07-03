@@ -4,9 +4,11 @@ import { useState } from "react";
 
 type MarqueeProps = {
   items: string[];
+  /** Duration of one full scroll cycle in seconds. Default: 20. */
+  duration?: number;
 };
 
-export function Marquee({ items }: MarqueeProps) {
+export function Marquee({ items, duration = 20 }: MarqueeProps) {
   const repeated = [...items, ...items];
   const [paused, setPaused] = useState(false);
 
@@ -19,7 +21,7 @@ export function Marquee({ items }: MarqueeProps) {
       <div
         className="flex min-w-max gap-6 px-6"
         style={{
-          animation: `marquee 20s linear infinite`,
+          animation: `marquee ${duration}s linear infinite`,
           animationPlayState: paused ? "paused" : "running"
         }}
       >
