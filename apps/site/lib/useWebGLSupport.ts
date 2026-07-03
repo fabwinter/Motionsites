@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 /**
  * Returns `true` when WebGL2/WebGL1 is available, `false` when not,
@@ -10,9 +10,11 @@ import { useEffect, useState } from "react";
  * out-of-memory crash mid-render.
  */
 export function useWebGLSupport(): boolean | null {
-  const [supported, setSupported] = useState<boolean | null>(null);
+  const [supported] = useState<boolean | null>(() => {
+    if (typeof document === "undefined") {
+      return null;
+    }
 
-  useEffect(() => {
     const canvas = document.createElement("canvas");
 
     const gl =
@@ -26,8 +28,8 @@ export function useWebGLSupport(): boolean | null {
       ext?.loseContext();
     }
 
-    setSupported(ok);
-  }, []);
+    return ok;
+  });
 
   return supported;
 }
