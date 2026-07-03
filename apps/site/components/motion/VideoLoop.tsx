@@ -6,17 +6,19 @@ import { useReducedMotion } from "framer-motion";
 
 type VideoLoopProps = {
   src?: string;
+  webmSrc?: string;
   poster: string;
   className?: string;
 };
 
-export function VideoLoop({ src, poster, className = "" }: VideoLoopProps) {
+export function VideoLoop({ src, webmSrc, poster, className = "" }: VideoLoopProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [active, setActive] = useState(false);
   const reduceMotion = useReducedMotion();
+  const hasVideo = !!(src ?? webmSrc);
 
   useEffect(() => {
-    if (!videoRef.current || reduceMotion || !src) {
+    if (!videoRef.current || reduceMotion || !hasVideo) {
       return;
     }
 
@@ -29,10 +31,10 @@ export function VideoLoop({ src, poster, className = "" }: VideoLoopProps) {
 
     observer.observe(videoRef.current);
     return () => observer.disconnect();
-  }, [reduceMotion, src]);
+  }, [reduceMotion, hasVideo]);
 
   useEffect(() => {
-    if (!videoRef.current || reduceMotion || !src) {
+    if (!videoRef.current || reduceMotion || !hasVideo) {
       return;
     }
 
@@ -41,9 +43,9 @@ export function VideoLoop({ src, poster, className = "" }: VideoLoopProps) {
     } else {
       videoRef.current.pause();
     }
-  }, [active, reduceMotion, src]);
+  }, [active, reduceMotion, hasVideo]);
 
-  if (!src || reduceMotion) {
+  if (!hasVideo || reduceMotion) {
     return (
       <div className={`relative overflow-hidden ${className}`}>
         <Image src={poster} alt="" fill className="object-cover" />
@@ -62,7 +64,8 @@ export function VideoLoop({ src, poster, className = "" }: VideoLoopProps) {
         preload="metadata"
         poster={poster}
       >
-        <source src={src} type="video/mp4" />
+        {webmSrc && <source src={webmSrc} type="video/webm" />}
+        {src && <source src={src} type="video/mp4" />}
       </video>
     </div>
   );

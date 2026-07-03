@@ -129,4 +129,3 @@ export async function optimizeAsset(
   }
   return optimizeModel(inputPath, outputDir, prompt.outputName);
 }
-}

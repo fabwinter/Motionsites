@@ -34,6 +34,39 @@ export type MotionSiteConfig = {
     ogImage: string;
     manifest: string;
   };
+  /**
+   * Per-section copy — swap these when reskinning for a new client.
+   * Every string that appears on the page but is not shared data
+   * (services[], process[], showcase[]) lives here.
+   */
+  sections: {
+    hero: {
+      eyebrow: string;
+      badge: string;
+    };
+    services: {
+      eyebrow: string;
+      heading: string;
+      body: string;
+    };
+    work: {
+      eyebrow: string;
+      heading: string;
+    };
+    process: {
+      eyebrow: string;
+      heading: string;
+    };
+    cta: {
+      eyebrow: string;
+      heading: string;
+      body: string;
+      buttonLabel: string;
+    };
+    footer: {
+      tagline: string;
+    };
+  };
 };
 
 export const siteConfig: MotionSiteConfig = {
@@ -124,6 +157,34 @@ export const siteConfig: MotionSiteConfig = {
     heroLoop: "/assets/hero-loop.mp4",
     ogImage: "/assets/og-image.svg",
     manifest: "/assets/asset-manifest.json"
+  },
+  sections: {
+    hero: {
+      eyebrow: "Premium 3D animated websites",
+      badge: "Signature: one hero, one sequence, zero filler"
+    },
+    services: {
+      eyebrow: "Motion library",
+      heading: "Core pieces built once and reused everywhere.",
+      body: "Each component accepts design tokens and gracefully falls back when motion or GPU budgets are tight."
+    },
+    work: {
+      eyebrow: "Reusable product",
+      heading: "Build the system once. Re-skin it per client."
+    },
+    process: {
+      eyebrow: "Scroll sequence",
+      heading: "Keep the whole page quiet except for one orchestrated moment."
+    },
+    cta: {
+      eyebrow: "Client-ready template",
+      heading: "A premium website becomes a config, prompt batch, and polish pass.",
+      body: "Start with a brief, lock the signature moment, generate the assets, and deliver a motion-rich site without reinventing the production stack.",
+      buttonLabel: "Request the stack"
+    },
+    footer: {
+      tagline: "Built for Vercel · Reduced-motion safe · iPad-aware"
+    }
   }
 };
 

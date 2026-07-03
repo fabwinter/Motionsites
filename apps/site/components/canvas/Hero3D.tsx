@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useReducedMotion } from "framer-motion";
+import { useWebGLSupport } from "@/lib/useWebGLSupport";
 
 const Scene = dynamic(() => import("./HeroScene"), {
   ssr: false,
@@ -19,8 +20,21 @@ type Hero3DProps = {
 
 export function Hero3D({ poster }: Hero3DProps) {
   const reduceMotion = useReducedMotion();
+  const webglSupported = useWebGLSupport();
 
-  if (reduceMotion) {
+  // Show poster immediately during SSR, while the WebGL check runs (null),
+  // when the user prefers reduced motion, or when WebGL is unavailable.
+  if (reduceMotion || webglSupported === false) {
+    return (
+      <div className="panel-card relative min-h-[420px] overflow-hidden rounded-[2rem]">
+        <Image src={poster} alt="" fill className="object-cover" priority />
+      </div>
+    );
+  }
+
+  // While the check is still running (null) show the poster so there is no
+  // flash of the empty loading state on capable devices.
+  if (webglSupported === null) {
     return (
       <div className="panel-card relative min-h-[420px] overflow-hidden rounded-[2rem]">
         <Image src={poster} alt="" fill className="object-cover" priority />

@@ -4,19 +4,35 @@ import Link from "next/link";
 import { useRef } from "react";
 import type { MouseEvent, PropsWithChildren } from "react";
 
-type MagneticButtonProps = PropsWithChildren<{
+type MagneticLinkProps = PropsWithChildren<{
   href: string;
+  onClick?: never;
+  type?: never;
   className?: string;
 }>;
+
+type MagneticButtonProps = PropsWithChildren<{
+  href?: never;
+  onClick?: () => void;
+  type?: "button" | "submit" | "reset";
+  className?: string;
+}>;
+
+type MagneticProps = MagneticLinkProps | MagneticButtonProps;
+
+const BASE_CLASS =
+  "inline-flex items-center justify-center rounded-full border border-white/12 bg-white/6 px-5 py-3 text-sm font-medium transition-transform duration-300";
 
 export function MagneticButton({
   href,
   children,
-  className = ""
-}: MagneticButtonProps) {
-  const ref = useRef<HTMLAnchorElement | null>(null);
+  className = "",
+  onClick,
+  type = "button"
+}: MagneticProps) {
+  const ref = useRef<HTMLAnchorElement | HTMLButtonElement | null>(null);
 
-  const handleMove = (event: MouseEvent<HTMLAnchorElement>) => {
+  const handleMove = (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
     const element = ref.current;
 
     if (!element) {
@@ -36,15 +52,32 @@ export function MagneticButton({
     }
   };
 
+  const combinedClass = `${BASE_CLASS} ${className}`;
+
+  if (href) {
+    return (
+      <Link
+        href={href}
+        ref={ref as React.RefObject<HTMLAnchorElement>}
+        onMouseMove={handleMove}
+        onMouseLeave={reset}
+        className={combinedClass}
+      >
+        {children}
+      </Link>
+    );
+  }
+
   return (
-    <Link
-      href={href}
-      ref={ref}
+    <button
+      ref={ref as React.RefObject<HTMLButtonElement>}
+      type={type}
+      onClick={onClick}
       onMouseMove={handleMove}
       onMouseLeave={reset}
-      className={`inline-flex items-center justify-center rounded-full border border-white/12 bg-white/6 px-5 py-3 text-sm font-medium transition-transform duration-300 ${className}`}
+      className={combinedClass}
     >
       {children}
-    </Link>
+    </button>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { createElement, useEffect, useRef } from "react";
-import type { ElementType, ReactNode } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import type { ReactNode } from "react";
 import { useReducedMotion } from "framer-motion";
 import SplitType from "split-type";
 import { ensureGsap } from "@/lib/gsap";
@@ -9,7 +9,7 @@ import { ensureGsap } from "@/lib/gsap";
 type RevealMode = "lines" | "words" | "chars";
 
 type RevealProps = {
-  as?: ElementType;
+  as?: "div" | "h1" | "h2" | "h3" | "p" | "span";
   children: ReactNode;
   className?: string;
   mode?: RevealMode;
@@ -21,15 +21,18 @@ export function Reveal({
   className,
   mode = "lines"
 }: RevealProps) {
-  const ref = useRef<HTMLElement | null>(null);
+  const elementRef = useRef<HTMLElement | null>(null);
   const reduceMotion = useReducedMotion();
+  const setElementRef = useCallback((node: HTMLElement | null) => {
+    elementRef.current = node;
+  }, []);
 
   useEffect(() => {
-    if (!ref.current || reduceMotion) {
+    if (!elementRef.current || reduceMotion) {
       return;
     }
 
-    const element = ref.current;
+    const element = elementRef.current;
     const { gsap, ScrollTrigger } = ensureGsap();
     const split = new SplitType(element, { types: mode });
     const targets =
@@ -58,5 +61,19 @@ export function Reveal({
     };
   }, [mode, reduceMotion]);
 
-  return createElement(as, { className, ref }, children);
+  switch (as) {
+    case "h1":
+      return <h1 className={className} ref={setElementRef}>{children}</h1>;
+    case "h2":
+      return <h2 className={className} ref={setElementRef}>{children}</h2>;
+    case "h3":
+      return <h3 className={className} ref={setElementRef}>{children}</h3>;
+    case "p":
+      return <p className={className} ref={setElementRef}>{children}</p>;
+    case "span":
+      return <span className={className} ref={setElementRef}>{children}</span>;
+    case "div":
+    default:
+      return <div className={className} ref={setElementRef}>{children}</div>;
+  }
 }

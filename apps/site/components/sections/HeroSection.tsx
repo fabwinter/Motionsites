@@ -6,11 +6,11 @@ import { Reveal } from "@/components/motion/Reveal";
 
 export function HeroSection() {
   return (
-    <section className="site-shell noise isolate pt-6">
+    <section className="site-shell noise isolate pt-[72px]">
       <ShaderBackground className="grid-overlay opacity-70" />
       <div className="section grid min-h-screen items-center gap-10 py-20 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="relative z-10">
-          <p className="eyebrow">Premium 3D animated websites</p>
+          <p className="eyebrow">{siteConfig.sections.hero.eyebrow}</p>
           <Reveal
             as="h1"
             className="display-title mt-6 max-w-3xl text-[clamp(3.5rem,9vw,7.5rem)]"
@@ -29,7 +29,7 @@ export function HeroSection() {
               {siteConfig.site.ctaLabel}
             </MagneticButton>
             <div className="rounded-full border border-white/10 px-4 py-3 font-mono text-xs uppercase tracking-[0.24em] text-white/55">
-              Signature: one hero, one sequence, zero filler
+              {siteConfig.sections.hero.badge}
             </div>
           </div>
         </div>

@@ -37,6 +37,7 @@ export function CursorFollower() {
   return (
     <div
       ref={ref}
+      aria-hidden="true"
       className="pointer-events-none fixed left-0 top-0 z-50 hidden size-6 rounded-full border border-cyan-300/30 bg-cyan-200/10 backdrop-blur md:block"
     />
   );

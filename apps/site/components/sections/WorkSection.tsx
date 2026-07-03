@@ -1,19 +1,18 @@
 import siteConfig from "@site-config";
-import { Parallax } from "@/components/motion/Parallax";
 import { Reveal } from "@/components/motion/Reveal";
 
 export function WorkSection() {
   return (
     <section className="section py-24">
       <Reveal as="div" className="eyebrow">
-        Reusable product
+        {siteConfig.sections.work.eyebrow}
       </Reveal>
       <Reveal as="h2" className="display-title mt-4 max-w-3xl text-5xl md:text-7xl">
-        Build the system once. Re-skin it per client.
+        {siteConfig.sections.work.heading}
       </Reveal>
       <div className="mt-16 grid gap-6 lg:grid-cols-2">
         {siteConfig.showcase.map((item) => (
-          <Parallax
+          <div
             key={item.title}
             className="panel-card rounded-[2rem] p-8 transition-transform hover:-translate-y-1"
           >
@@ -32,7 +31,7 @@ export function WorkSection() {
                 </div>
               ))}
             </div>
-          </Parallax>
+          </div>
         ))}
       </div>
     </section>
