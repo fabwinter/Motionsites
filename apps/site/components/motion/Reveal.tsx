@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 import { useReducedMotion } from "framer-motion";
 import SplitType from "split-type";
@@ -23,9 +23,9 @@ export function Reveal({
 }: RevealProps) {
   const elementRef = useRef<HTMLElement | null>(null);
   const reduceMotion = useReducedMotion();
-  const setElementRef = (node: HTMLElement | null) => {
+  const setElementRef = useCallback((node: HTMLElement | null) => {
     elementRef.current = node;
-  };
+  }, []);
 
   useEffect(() => {
     if (!elementRef.current || reduceMotion) {
